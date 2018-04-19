@@ -1,0 +1,6 @@
+all:
+	go install -v github.com/frankbraun/mole/...
+
+.PHONY: test
+test:
+	go test github.com/frankbraun/mole/...
