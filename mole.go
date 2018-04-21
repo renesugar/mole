@@ -11,6 +11,7 @@ import (
 	"github.com/frankbraun/go-xmpp"
 	"github.com/frankbraun/mole/ui"
 	"github.com/frankbraun/mole/util"
+	"github.com/frankbraun/mole/util/lockfile"
 	mlog "github.com/frankbraun/mole/util/log"
 	"github.com/mutecomm/mute/util/home"
 )
@@ -80,6 +81,12 @@ func moleMain() error {
 	if err := prepareHillDir(*hillFile); err != nil {
 		return err
 	}
+	// create lock anchored at .hill file
+	lock, err := lockfile.Create(*hillFile)
+	if err != nil {
+		return err
+	}
+	defer lock.Release()
 	// start UI event loop
 	return ui.Run(*hillFile, *dump, *xmppDebug)
 }
