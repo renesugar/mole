@@ -82,6 +82,7 @@ func Unmarshal(data []byte) (*Hill, error) {
 	return &h, nil
 }
 
+// LastAccount returns the last added account or nil.
 func (h *Hill) LastAccount() *Account {
 	if h.Accounts == nil || len(h.Accounts) == 0 {
 		return nil
