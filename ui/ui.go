@@ -1,3 +1,4 @@
+// Package ui implements the text user interface of Mole.
 package ui
 
 import (

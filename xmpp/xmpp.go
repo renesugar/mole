@@ -1,3 +1,4 @@
+// Package xmpp implements the XMPP layer of Mole.
 package xmpp
 
 import (
