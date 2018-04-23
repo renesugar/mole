@@ -26,12 +26,12 @@
 
 
 [[constraint]]
-  branch = "debug"
-  name = "github.com/frankbraun/go-xmpp"
-
-[[constraint]]
   name = "github.com/gdamore/tcell"
   version = "1.0.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/mattn/go-xmpp"
 
 [[constraint]]
   branch = "master"

@@ -2,12 +2,6 @@
 
 
 [[projects]]
-  branch = "debug"
-  name = "github.com/frankbraun/go-xmpp"
-  packages = ["."]
-  revision = "b66050f5c9af007bf8b66e679e8a492faf279831"
-
-[[projects]]
   branch = "master"
   name = "github.com/gdamore/encoding"
   packages = ["."]
@@ -36,6 +30,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/mattn/go-xmpp"
+  packages = ["."]
+  revision = "8a5843171fdc3c2d102c14bbfd531b41b88741a8"
+
+[[projects]]
+  branch = "master"
   name = "github.com/mutecomm/mute"
   packages = ["util/home"]
   revision = "131f820b5bdf98147e21a70476693e5efecea00d"
@@ -56,7 +56,7 @@
     "poly1305",
     "salsa20/salsa"
   ]
-  revision = "d6449816ce06963d9d136eee5a56fca5b0616e7e"
+  revision = "2b6c08872f4b66da917bb4ce98df4f0307330f78"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -73,6 +73,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5a4cc8c99407b4e0fe2290e2f1ca9485786bc17f8ed56e777e3d1cd32e8d1f2b"
+  inputs-digest = "5faade68cef1f10ccffe21921d1f7a097c7a9dc8848c7f11f858906547685c09"
   solver-name = "gps-cdcl"
   solver-version = 1
