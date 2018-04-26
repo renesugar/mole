@@ -6,9 +6,10 @@
   name = "github.com/frankbraun/codechain"
   packages = [
     "util/file",
+    "util/home",
     "util/lockfile"
   ]
-  revision = "4f9a85cc5f635f77e760a7a0515d8cd3c5a04252"
+  revision = "62310ef8073d15a614907224ff1fe658bcdd7269"
 
 [[projects]]
   branch = "master"
@@ -45,12 +46,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/mutecomm/mute"
-  packages = ["util/home"]
-  revision = "131f820b5bdf98147e21a70476693e5efecea00d"
-
-[[projects]]
-  branch = "master"
   name = "github.com/rivo/tview"
   packages = ["."]
   revision = "f855bee0205c35e6a055b86cc341effea0f446ce"
@@ -65,7 +60,7 @@
     "poly1305",
     "salsa20/salsa"
   ]
-  revision = "2b6c08872f4b66da917bb4ce98df4f0307330f78"
+  revision = "dccd99e89d39b13e12f1103c72e3bc49eb40a833"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -82,6 +77,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "eeeaf440078023cba6da817f5473efb01833086a830d4105ab67341666f5ccf4"
+  inputs-digest = "19108b076a6d77ed41b17dc795a91c71e564448975fde30ca3fdfc58913c062b"
   solver-name = "gps-cdcl"
   solver-version = 1

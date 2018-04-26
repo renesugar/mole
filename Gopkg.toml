@@ -26,16 +26,16 @@
 
 
 [[constraint]]
+  branch = "master"
+  name = "github.com/frankbraun/codechain"
+
+[[constraint]]
   name = "github.com/gdamore/tcell"
   version = "1.0.0"
 
 [[constraint]]
   branch = "master"
   name = "github.com/mattn/go-xmpp"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/mutecomm/mute"
 
 [[constraint]]
   branch = "master"

@@ -8,12 +8,12 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/frankbraun/codechain/util/home"
 	"github.com/frankbraun/codechain/util/lockfile"
 	"github.com/frankbraun/mole/ui"
 	"github.com/frankbraun/mole/util"
 	mlog "github.com/frankbraun/mole/util/log"
 	"github.com/mattn/go-xmpp"
-	"github.com/mutecomm/mute/util/home"
 )
 
 const (
