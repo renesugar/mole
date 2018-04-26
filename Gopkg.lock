@@ -4,8 +4,11 @@
 [[projects]]
   branch = "master"
   name = "github.com/frankbraun/codechain"
-  packages = ["util/lockfile"]
-  revision = "d055bb91b158092636b047bcdbb754bf3973a2ef"
+  packages = [
+    "util/file",
+    "util/lockfile"
+  ]
+  revision = "4f9a85cc5f635f77e760a7a0515d8cd3c5a04252"
 
 [[projects]]
   branch = "master"
@@ -79,6 +82,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "74489543808c1440c0de6dd6ef24a116b2bc33bdc807f4fc3a8ea09ed902d8e7"
+  inputs-digest = "eeeaf440078023cba6da817f5473efb01833086a830d4105ab67341666f5ccf4"
   solver-name = "gps-cdcl"
   solver-version = 1

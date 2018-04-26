@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/frankbraun/codechain/util/file"
 	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/nacl/secretbox"
 )
@@ -48,7 +49,11 @@ func (s *State) save(w io.Writer, data []byte) error {
 // Create storage file and write encrypte data to it.
 func Create(filename, passphrase string, data []byte) (*State, error) {
 	// make sure keyfile does not exist already
-	if _, err := os.Stat(filename); err == nil {
+	exists, err := file.Exists(filename)
+	if err != nil {
+		return nil, err
+	}
+	if exists {
 		return nil, fmt.Errorf("storage: file '%s' exists already", filename)
 	}
 	// generate salt
