@@ -3,6 +3,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/frankbraun/codechain"
+  packages = ["util/lockfile"]
+  revision = "d055bb91b158092636b047bcdbb754bf3973a2ef"
+
+[[projects]]
+  branch = "master"
   name = "github.com/gdamore/encoding"
   packages = ["."]
   revision = "b23993cbb6353f0e6aa98d0ee318a34728f628b9"
@@ -73,6 +79,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5faade68cef1f10ccffe21921d1f7a097c7a9dc8848c7f11f858906547685c09"
+  inputs-digest = "74489543808c1440c0de6dd6ef24a116b2bc33bdc807f4fc3a8ea09ed902d8e7"
   solver-name = "gps-cdcl"
   solver-version = 1
