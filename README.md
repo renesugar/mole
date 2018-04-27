@@ -6,14 +6,14 @@
 go get -u -v github.com/frankbraun/mole
 ```
 
-### Goals
+### Features
 
-- Minimal code base, Go only, cross-platform.
-- Enforced encryption (via OMEMO) [not implemented yet].
-- Usable via Tor [not implemented yet].
-- XMPP standards-compliant [not tested yet].
+- [x] Minimal code base, Go only, cross-platform.
+- [ ] Enforced encryption (via OMEMO).
+- [ ] Usable via Tor.
+- [ ] XMPP standards-compliant (not tested yet).
 
-### Non-goals
+### Out of scope
 
 - Plugin system.
 - OTR integration.
