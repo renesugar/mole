@@ -7,9 +7,10 @@
   packages = [
     "util/file",
     "util/home",
-    "util/lockfile"
+    "util/lockfile",
+    "util/log"
   ]
-  revision = "2d8ddffd55ff7163752f6de57273200cd3c569c7"
+  revision = "6956eceb0cad6d108468f686c375eb48f56d368d"
 
 [[projects]]
   branch = "master"
@@ -77,6 +78,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "19108b076a6d77ed41b17dc795a91c71e564448975fde30ca3fdfc58913c062b"
+  inputs-digest = "feeaf40feeaa3db4d590e42c85f11c2d5cd175c9b25dfa9d0bc3dd511fa6ecc3"
   solver-name = "gps-cdcl"
   solver-version = 1

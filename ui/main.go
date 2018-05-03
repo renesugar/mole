@@ -3,7 +3,7 @@ package ui
 import (
 	"io"
 
-	"github.com/frankbraun/mole/util/log"
+	"github.com/frankbraun/codechain/util/log"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 )

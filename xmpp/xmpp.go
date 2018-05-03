@@ -4,9 +4,9 @@ package xmpp
 import (
 	"crypto/tls"
 
+	"github.com/frankbraun/codechain/util/log"
 	"github.com/frankbraun/mole/config"
 	"github.com/frankbraun/mole/util"
-	"github.com/frankbraun/mole/util/log"
 	"github.com/mattn/go-xmpp"
 )
 

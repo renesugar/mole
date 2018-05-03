@@ -4,15 +4,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/frankbraun/codechain/util/home"
 	"github.com/frankbraun/codechain/util/lockfile"
+	"github.com/frankbraun/codechain/util/log"
 	"github.com/frankbraun/mole/ui"
 	"github.com/frankbraun/mole/util"
-	mlog "github.com/frankbraun/mole/util/log"
 	"github.com/mattn/go-xmpp"
 )
 
@@ -27,7 +26,7 @@ var (
 
 func prepareHillDir(hillFile string) error {
 	if hillFile == defaultHillFile {
-		mlog.Printf("mkdir -p %s", defaultHomeDir)
+		log.Printf("mkdir -p %s", defaultHomeDir)
 		if err := os.MkdirAll(defaultHomeDir, 0700); err != nil {
 			return err
 		}
@@ -67,11 +66,11 @@ func moleMain() error {
 			return err
 		}
 		defer func() {
-			mlog.Printf("logfile '%s' closed.", *logFile)
+			log.Printf("logfile '%s' closed.", *logFile)
 			fp.Close()
 		}()
-		mlog.Std = log.New(fp, "", log.LstdFlags)
-		mlog.Printf("logging to '%s'...", *logFile)
+		log.Std = log.NewStd(fp)
+		log.Printf("logging to '%s'...", *logFile)
 		// use fp as xmpp.DebugWriter
 		xmpp.DebugWriter = fp
 	} else if *xmppDebug {
@@ -94,7 +93,7 @@ func moleMain() error {
 func main() {
 	// work around defer not working after os.Exit()
 	if err := moleMain(); err != nil {
-		mlog.Printf("fatal(): %v", err)
+		log.Printf("fatal(): %v", err)
 		util.Fatal(err)
 	}
 }

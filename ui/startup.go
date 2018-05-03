@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/frankbraun/codechain/util/log"
 	"github.com/frankbraun/mole/config"
 	"github.com/frankbraun/mole/storage"
-	"github.com/frankbraun/mole/util/log"
 	"github.com/frankbraun/mole/xmpp"
 	"github.com/rivo/tview"
 )
