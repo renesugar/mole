@@ -11,7 +11,7 @@ import (
 )
 
 // Start XMPP client for the given account.
-// Messages are from send channel and sent to server.
+// Messages are read from send channel and sent to server.
 // Messages retrieved from server a written to recv channel.
 func Start(
 	account *config.Account,
