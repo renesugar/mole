@@ -49,7 +49,7 @@
   branch = "master"
   name = "github.com/rivo/tview"
   packages = ["."]
-  revision = "bb80ad41aae697b9c1a4213ab0c4f500cfbf659b"
+  revision = "71ecf1f4299c6d72b16d20da72405b7e85ac8720"
 
 [[projects]]
   branch = "master"
@@ -61,7 +61,7 @@
     "poly1305",
     "salsa20/salsa"
   ]
-  revision = "a3beeb748656e13e54256fd2cde19e058f41f60f"
+  revision = "ab813273cd59e1333f7ae7bff5d027d4aadf528c"
 
 [[projects]]
   branch = "master"
