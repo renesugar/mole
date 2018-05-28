@@ -69,47 +69,6 @@ type DropDown struct {
 	finished func(tcell.Key)
 }
 
-// NewDropDown returns a new drop-down.
-func NewDropDown() *DropDown {
-	list := NewList().ShowSecondaryText(false)
-	list.SetMainTextColor(Styles.PrimitiveBackgroundColor).
-		SetSelectedTextColor(Styles.PrimitiveBackgroundColor).
-		SetSelectedBackgroundColor(Styles.PrimaryTextColor).
-		SetBackgroundColor(Styles.MoreContrastBackgroundColor)
-
-	d := &DropDown{
-		Box:                  NewBox(),
-		currentOption:        -1,
-		list:                 list,
-		labelColor:           Styles.SecondaryTextColor,
-		fieldBackgroundColor: Styles.ContrastBackgroundColor,
-		fieldTextColor:       Styles.PrimaryTextColor,
-		prefixTextColor:      Styles.ContrastSecondaryTextColor,
-	}
-
-	d.focus = d
-
-	return d
-}
-
-// SetCurrentOption sets the index of the currently selected option. This may
-// be a negative value to indicate that no option is currently selected.
-func (d *DropDown) SetCurrentOption(index int) *DropDown {
-	d.currentOption = index
-	d.list.SetCurrentItem(index)
-	return d
-}
-
-// GetCurrentOption returns the index of the currently selected option as well
-// as its text. If no option was selected, -1 and an empty string is returned.
-func (d *DropDown) GetCurrentOption() (int, string) {
-	var text string
-	if d.currentOption >= 0 && d.currentOption < len(d.options) {
-		text = d.options[d.currentOption].Text
-	}
-	return d.currentOption, text
-}
-
 // SetLabel sets the text to be displayed before the input area.
 func (d *DropDown) SetLabel(label string) *DropDown {
 	d.label = label
@@ -121,36 +80,9 @@ func (d *DropDown) GetLabel() string {
 	return d.label
 }
 
-// SetLabelWidth sets the screen width of the label. A value of 0 will cause the
-// primitive to use the width of the label string.
-func (d *DropDown) SetLabelWidth(width int) *DropDown {
-	d.labelWidth = width
-	return d
-}
-
 // SetLabelColor sets the color of the label.
 func (d *DropDown) SetLabelColor(color tcell.Color) *DropDown {
 	d.labelColor = color
-	return d
-}
-
-// SetFieldBackgroundColor sets the background color of the options area.
-func (d *DropDown) SetFieldBackgroundColor(color tcell.Color) *DropDown {
-	d.fieldBackgroundColor = color
-	return d
-}
-
-// SetFieldTextColor sets the text color of the options area.
-func (d *DropDown) SetFieldTextColor(color tcell.Color) *DropDown {
-	d.fieldTextColor = color
-	return d
-}
-
-// SetPrefixTextColor sets the color of the prefix string. The prefix string is
-// shown when the user starts typing text, which directly selects the first
-// option that starts with the typed string.
-func (d *DropDown) SetPrefixTextColor(color tcell.Color) *DropDown {
-	d.prefixTextColor = color
 	return d
 }
 
@@ -184,33 +116,6 @@ func (d *DropDown) GetFieldWidth() int {
 		}
 	}
 	return fieldWidth
-}
-
-// AddOption adds a new selectable option to this drop-down. The "selected"
-// callback is called when this option was selected. It may be nil.
-func (d *DropDown) AddOption(text string, selected func()) *DropDown {
-	d.options = append(d.options, &dropDownOption{Text: text, Selected: selected})
-	d.list.AddItem(text, "", 0, nil)
-	return d
-}
-
-// SetOptions replaces all current options with the ones provided and installs
-// one callback function which is called when one of the options is selected.
-// It will be called with the option's text and its index into the options
-// slice. The "selected" parameter may be nil.
-func (d *DropDown) SetOptions(texts []string, selected func(text string, index int)) *DropDown {
-	d.list.Clear()
-	d.options = nil
-	for index, text := range texts {
-		func(t string, i int) {
-			d.AddOption(text, func() {
-				if selected != nil {
-					selected(t, i)
-				}
-			})
-		}(text, index)
-	}
-	return d
 }
 
 // SetDoneFunc sets a handler which is called when the user is done selecting

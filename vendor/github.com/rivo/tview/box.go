@@ -116,25 +116,6 @@ func (b *Box) SetRect(x, y, width, height int) {
 	b.height = height
 }
 
-// SetDrawFunc sets a callback function which is invoked after the box primitive
-// has been drawn. This allows you to add a more individual style to the box
-// (and all primitives which extend it).
-//
-// The function is provided with the box's dimensions (set via SetRect()). It
-// must return the box's inner dimensions (x, y, width, height) which will be
-// returned by GetInnerRect(), used by descendent primitives to draw their own
-// content.
-func (b *Box) SetDrawFunc(handler func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)) *Box {
-	b.draw = handler
-	return b
-}
-
-// GetDrawFunc returns the callback function which was installed with
-// SetDrawFunc() or nil if no such function has been installed.
-func (b *Box) GetDrawFunc() func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
-	return b.draw
-}
-
 // WrapInputHandler wraps an input handler (see InputHandler()) with the
 // functionality to capture input (see SetInputCapture()) before passing it
 // on to the provided (default) input handler.
@@ -168,12 +149,6 @@ func (b *Box) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKe
 	return b
 }
 
-// GetInputCapture returns the function installed with SetInputCapture() or nil
-// if no such function has been installed.
-func (b *Box) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
-	return b.inputCapture
-}
-
 // SetBackgroundColor sets the box's background color.
 func (b *Box) SetBackgroundColor(color tcell.Color) *Box {
 	b.backgroundColor = color
@@ -187,21 +162,9 @@ func (b *Box) SetBorder(show bool) *Box {
 	return b
 }
 
-// SetBorderColor sets the box's border color.
-func (b *Box) SetBorderColor(color tcell.Color) *Box {
-	b.borderColor = color
-	return b
-}
-
 // SetTitle sets the box's title.
 func (b *Box) SetTitle(title string) *Box {
 	b.title = title
-	return b
-}
-
-// SetTitleColor sets the box's title color.
-func (b *Box) SetTitleColor(color tcell.Color) *Box {
-	b.titleColor = color
 	return b
 }
 

@@ -1,14 +1,5 @@
 package runewidth
 
-import (
-	"syscall"
-)
-
-var (
-	kernel32               = syscall.NewLazyDLL("kernel32")
-	procGetConsoleOutputCP = kernel32.NewProc("GetConsoleOutputCP")
-)
-
 // IsEastAsian return true if the current locale is CJK
 func IsEastAsian() bool {
 	r1, _, _ := procGetConsoleOutputCP.Call()

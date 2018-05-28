@@ -423,18 +423,6 @@ const (
 	ColorYellowGreen
 )
 
-// These are aliases for the color gray, because some of us spell
-// it as grey.
-const (
-	ColorGrey           = ColorGray
-	ColorDimGrey        = ColorDimGray
-	ColorDarkGrey       = ColorDarkGray
-	ColorDarkSlateGrey  = ColorDarkSlateGray
-	ColorLightGrey      = ColorLightGray
-	ColorLightSlateGrey = ColorLightSlateGray
-	ColorSlateGrey      = ColorSlateGray
-)
-
 // ColorValues maps color constants to their RGB values.
 var ColorValues = map[Color]int32{
 	ColorBlack:                0x000000,
@@ -991,12 +979,6 @@ func (c Color) RGB() (int32, int32, int32) {
 		return -1, -1, -1
 	}
 	return (v >> 16) & 0xff, (v >> 8) & 0xff, v & 0xff
-}
-
-// NewRGBColor returns a new color with the given red, green, and blue values.
-// Each value must be represented in the range 0-255.
-func NewRGBColor(r, g, b int32) Color {
-	return NewHexColor(((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff))
 }
 
 // NewHexColor returns a color using the given 24-bit RGB value.

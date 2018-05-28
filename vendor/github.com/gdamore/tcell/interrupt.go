@@ -29,13 +29,3 @@ type EventInterrupt struct {
 func (ev *EventInterrupt) When() time.Time {
 	return ev.t
 }
-
-// Data is used to obtain the opaque event payload.
-func (ev *EventInterrupt) Data() interface{} {
-	return ev.v
-}
-
-// NewEventInterrupt creates an EventInterrupt with the given payload.
-func NewEventInterrupt(data interface{}) *EventInterrupt {
-	return &EventInterrupt{t: time.Now(), v: data}
-}

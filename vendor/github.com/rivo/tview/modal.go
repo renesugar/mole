@@ -29,25 +29,6 @@ type Modal struct {
 	done func(buttonIndex int, buttonLabel string)
 }
 
-// NewModal returns a new modal message window.
-func NewModal() *Modal {
-	m := &Modal{
-		Box:       NewBox(),
-		textColor: Styles.PrimaryTextColor,
-	}
-	m.form = NewForm().
-		SetButtonsAlign(AlignCenter).
-		SetButtonBackgroundColor(Styles.PrimitiveBackgroundColor).
-		SetButtonTextColor(Styles.PrimaryTextColor)
-	m.form.SetBackgroundColor(Styles.ContrastBackgroundColor).SetBorderPadding(0, 0, 0, 0)
-	m.frame = NewFrame(m.form).SetBorders(0, 0, 1, 0, 0, 0)
-	m.frame.SetBorder(true).
-		SetBackgroundColor(Styles.ContrastBackgroundColor).
-		SetBorderPadding(1, 1, 1, 1)
-	m.focus = m
-	return m
-}
-
 // SetTextColor sets the color of the message text.
 func (m *Modal) SetTextColor(color tcell.Color) *Modal {
 	m.textColor = color
@@ -68,21 +49,6 @@ func (m *Modal) SetDoneFunc(handler func(buttonIndex int, buttonLabel string)) *
 // window.
 func (m *Modal) SetText(text string) *Modal {
 	m.text = text
-	return m
-}
-
-// AddButtons adds buttons to the window. There must be at least one button and
-// a "done" handler so the window can be closed again.
-func (m *Modal) AddButtons(labels []string) *Modal {
-	for index, label := range labels {
-		func(i int, l string) {
-			m.form.AddButton(label, func() {
-				if m.done != nil {
-					m.done(i, l)
-				}
-			})
-		}(index, label)
-	}
 	return m
 }
 

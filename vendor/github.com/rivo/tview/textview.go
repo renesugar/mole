@@ -174,50 +174,6 @@ func NewTextView() *TextView {
 	}
 }
 
-// SetScrollable sets the flag that decides whether or not the text view is
-// scrollable. If true, text is kept in a buffer and can be navigated.
-func (t *TextView) SetScrollable(scrollable bool) *TextView {
-	t.scrollable = scrollable
-	if !scrollable {
-		t.trackEnd = true
-	}
-	return t
-}
-
-// SetWrap sets the flag that, if true, leads to lines that are longer than the
-// available width being wrapped onto the next line. If false, any characters
-// beyond the available width are not displayed.
-func (t *TextView) SetWrap(wrap bool) *TextView {
-	if t.wrap != wrap {
-		t.index = nil
-	}
-	t.wrap = wrap
-	return t
-}
-
-// SetWordWrap sets the flag that, if true and if the "wrap" flag is also true
-// (see SetWrap()), wraps the line at spaces or after punctuation marks. Note
-// that trailing spaces will not be printed.
-//
-// This flag is ignored if the "wrap" flag is false.
-func (t *TextView) SetWordWrap(wrapOnWords bool) *TextView {
-	if t.wordWrap != wrapOnWords {
-		t.index = nil
-	}
-	t.wordWrap = wrapOnWords
-	return t
-}
-
-// SetTextAlign sets the text alignment within the text view. This must be
-// either AlignLeft, AlignCenter, or AlignRight.
-func (t *TextView) SetTextAlign(align int) *TextView {
-	if t.align != align {
-		t.index = nil
-	}
-	t.align = align
-	return t
-}
-
 // SetTextColor sets the initial color of the text (which can be changed
 // dynamically by sending color strings in square brackets to the text view if
 // dynamic colors are enabled).
@@ -244,16 +200,6 @@ func (t *TextView) SetDynamicColors(dynamic bool) *TextView {
 	return t
 }
 
-// SetRegions sets the flag that allows to define regions in the text. See class
-// description for details.
-func (t *TextView) SetRegions(regions bool) *TextView {
-	if t.regions != regions {
-		t.index = nil
-	}
-	t.regions = regions
-	return t
-}
-
 // SetChangedFunc sets a handler function which is called when the text of the
 // text view has changed. This is typically used to cause the application to
 // redraw the screen.
@@ -270,164 +216,12 @@ func (t *TextView) SetDoneFunc(handler func(key tcell.Key)) *TextView {
 	return t
 }
 
-// ScrollTo scrolls to the specified row and column (both starting with 0).
-func (t *TextView) ScrollTo(row, column int) *TextView {
-	if !t.scrollable {
-		return t
-	}
-	t.lineOffset = row
-	t.columnOffset = column
-	return t
-}
-
-// ScrollToBeginning scrolls to the top left corner of the text if the text view
-// is scrollable.
-func (t *TextView) ScrollToBeginning() *TextView {
-	if !t.scrollable {
-		return t
-	}
-	t.trackEnd = false
-	t.lineOffset = 0
-	t.columnOffset = 0
-	return t
-}
-
-// ScrollToEnd scrolls to the bottom left corner of the text if the text view
-// is scrollable. Adding new rows to the end of the text view will cause it to
-// scroll with the new data.
-func (t *TextView) ScrollToEnd() *TextView {
-	if !t.scrollable {
-		return t
-	}
-	t.trackEnd = true
-	t.columnOffset = 0
-	return t
-}
-
 // Clear removes all text from the buffer.
 func (t *TextView) Clear() *TextView {
 	t.buffer = nil
 	t.recentBytes = nil
 	t.index = nil
 	return t
-}
-
-// Highlight specifies which regions should be highlighted. See class
-// description for details on regions. Empty region strings are ignored.
-//
-// Text in highlighted regions will be drawn inverted, i.e. with their
-// background and foreground colors swapped.
-//
-// Calling this function will remove any previous highlights. To remove all
-// highlights, call this function without any arguments.
-func (t *TextView) Highlight(regionIDs ...string) *TextView {
-	t.highlights = make(map[string]struct{})
-	for _, id := range regionIDs {
-		if id == "" {
-			continue
-		}
-		t.highlights[id] = struct{}{}
-	}
-	t.index = nil
-	return t
-}
-
-// GetHighlights returns the IDs of all currently highlighted regions.
-func (t *TextView) GetHighlights() (regionIDs []string) {
-	for id := range t.highlights {
-		regionIDs = append(regionIDs, id)
-	}
-	return
-}
-
-// ScrollToHighlight will cause the visible area to be scrolled so that the
-// highlighted regions appear in the visible area of the text view. This
-// repositioning happens the next time the text view is drawn. It happens only
-// once so you will need to call this function repeatedly to always keep
-// highlighted regions in view.
-//
-// Nothing happens if there are no highlighted regions or if the text view is
-// not scrollable.
-func (t *TextView) ScrollToHighlight() *TextView {
-	if len(t.highlights) == 0 || !t.scrollable || !t.regions {
-		return t
-	}
-	t.index = nil
-	t.scrollToHighlights = true
-	t.trackEnd = false
-	return t
-}
-
-// GetRegionText returns the text of the region with the given ID. If dynamic
-// colors are enabled, color tags are stripped from the text. Newlines are
-// always returned as '\n' runes.
-//
-// If the region does not exist or if regions are turned off, an empty string
-// is returned.
-func (t *TextView) GetRegionText(regionID string) string {
-	if !t.regions || regionID == "" {
-		return ""
-	}
-
-	var (
-		buffer          bytes.Buffer
-		currentRegionID string
-	)
-
-	for _, str := range t.buffer {
-		// Find all color tags in this line.
-		var colorTagIndices [][]int
-		if t.dynamicColors {
-			colorTagIndices = colorPattern.FindAllStringIndex(str, -1)
-		}
-
-		// Find all regions in this line.
-		var (
-			regionIndices [][]int
-			regions       [][]string
-		)
-		if t.regions {
-			regionIndices = regionPattern.FindAllStringIndex(str, -1)
-			regions = regionPattern.FindAllStringSubmatch(str, -1)
-		}
-
-		// Analyze this line.
-		var currentTag, currentRegion int
-		for pos, ch := range str {
-			// Skip any color tags.
-			if currentTag < len(colorTagIndices) && pos >= colorTagIndices[currentTag][0] && pos < colorTagIndices[currentTag][1] {
-				if pos == colorTagIndices[currentTag][1]-1 {
-					currentTag++
-				}
-				continue
-			}
-
-			// Skip any regions.
-			if currentRegion < len(regionIndices) && pos >= regionIndices[currentRegion][0] && pos < regionIndices[currentRegion][1] {
-				if pos == regionIndices[currentRegion][1]-1 {
-					if currentRegionID == regionID {
-						// This is the end of the requested region. We're done.
-						return buffer.String()
-					}
-					currentRegionID = regions[currentRegion][1]
-					currentRegion++
-				}
-				continue
-			}
-
-			// Add this rune.
-			if currentRegionID == regionID {
-				buffer.WriteRune(ch)
-			}
-		}
-
-		// Add newline.
-		if currentRegionID == regionID {
-			buffer.WriteRune('\n')
-		}
-	}
-
-	return escapePattern.ReplaceAllString(buffer.String(), `[$1$2]`)
 }
 
 // Write lets us implement the io.Writer interface. Tab characters will be

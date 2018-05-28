@@ -47,23 +47,6 @@ func (ev *EventMouse) When() time.Time {
 	return ev.t
 }
 
-// Buttons returns the list of buttons that were pressed or wheel motions.
-func (ev *EventMouse) Buttons() ButtonMask {
-	return ev.btn
-}
-
-// Modifiers returns a list of keyboard modifiers that were pressed
-// with the mouse button(s).
-func (ev *EventMouse) Modifiers() ModMask {
-	return ev.mod
-}
-
-// Position returns the mouse position in character cells.  The origin
-// 0, 0 is at the upper left corner.
-func (ev *EventMouse) Position() (int, int) {
-	return ev.x, ev.y
-}
-
 // NewEventMouse is used to create a new mouse event.  Applications
 // shouldn't need to use this; its mostly for screen implementors.
 func NewEventMouse(x, y int, btn ButtonMask, mod ModMask) *EventMouse {

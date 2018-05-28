@@ -62,11 +62,6 @@ func (ev *EventError) When() time.Time {
 	return ev.t
 }
 
-// Error implements the error.
-func (ev *EventError) Error() string {
-	return ev.err.Error()
-}
-
 // NewEventError creates an ErrorEvent with the given error payload.
 func NewEventError(err error) *EventError {
 	return &EventError{t: time.Now(), err: err}

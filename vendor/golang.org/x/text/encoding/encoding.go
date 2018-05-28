@@ -12,11 +12,8 @@ package encoding // import "golang.org/x/text/encoding"
 
 import (
 	"errors"
-	"io"
-	"strconv"
 	"unicode/utf8"
 
-	"golang.org/x/text/encoding/internal/identifier"
 	"golang.org/x/text/transform"
 )
 
@@ -51,34 +48,6 @@ type Decoder struct {
 	_ struct{}
 }
 
-// Bytes converts the given encoded bytes to UTF-8. It returns the converted
-// bytes or nil, err if any error occurred.
-func (d *Decoder) Bytes(b []byte) ([]byte, error) {
-	b, _, err := transform.Bytes(d, b)
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
-}
-
-// String converts the given encoded string to UTF-8. It returns the converted
-// string or "", err if any error occurred.
-func (d *Decoder) String(s string) (string, error) {
-	s, _, err := transform.String(d, s)
-	if err != nil {
-		return "", err
-	}
-	return s, nil
-}
-
-// Reader wraps another Reader to decode its bytes.
-//
-// The Decoder may not be used for any other operation as long as the returned
-// Reader is in use.
-func (d *Decoder) Reader(r io.Reader) io.Reader {
-	return transform.NewReader(r, d)
-}
-
 // An Encoder converts bytes from UTF-8. It implements transform.Transformer.
 //
 // Each rune that cannot be transcoded will result in an error. In this case,
@@ -95,38 +64,6 @@ type Encoder struct {
 	_ struct{}
 }
 
-// Bytes converts bytes from UTF-8. It returns the converted bytes or nil, err if
-// any error occurred.
-func (e *Encoder) Bytes(b []byte) ([]byte, error) {
-	b, _, err := transform.Bytes(e, b)
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
-}
-
-// String converts a string from UTF-8. It returns the converted string or
-// "", err if any error occurred.
-func (e *Encoder) String(s string) (string, error) {
-	s, _, err := transform.String(e, s)
-	if err != nil {
-		return "", err
-	}
-	return s, nil
-}
-
-// Writer wraps another Writer to encode its UTF-8 output.
-//
-// The Encoder may not be used for any other operation as long as the returned
-// Writer is in use.
-func (e *Encoder) Writer(w io.Writer) io.Writer {
-	return transform.NewWriter(w, e)
-}
-
-// ASCIISub is the ASCII substitute character, as recommended by
-// http://unicode.org/reports/tr36/#Text_Comparison
-const ASCIISub = '\x1a'
-
 // Nop is the nop encoding. Its transformed bytes are the same as the source
 // bytes; it does not replace invalid UTF-8 sequences.
 var Nop Encoding = nop{}
@@ -140,14 +77,6 @@ func (nop) NewEncoder() *Encoder {
 	return &Encoder{Transformer: transform.Nop}
 }
 
-// Replacement is the replacement encoding. Decoding from the replacement
-// encoding yields a single '\uFFFD' replacement rune. Encoding from UTF-8 to
-// the replacement encoding yields the same as the source bytes except that
-// invalid UTF-8 is converted to '\uFFFD'.
-//
-// It is defined at http://encoding.spec.whatwg.org/#replacement
-var Replacement Encoding = replacement{}
-
 type replacement struct{}
 
 func (replacement) NewDecoder() *Decoder {
@@ -156,10 +85,6 @@ func (replacement) NewDecoder() *Decoder {
 
 func (replacement) NewEncoder() *Encoder {
 	return &Encoder{Transformer: replacementEncoder{}}
-}
-
-func (replacement) ID() (mib identifier.MIB, other string) {
-	return identifier.Replacement, ""
 }
 
 type replacementDecoder struct{ transform.NopResetter }
@@ -214,27 +139,6 @@ func (replacementEncoder) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int
 	return nDst, nSrc, err
 }
 
-// HTMLEscapeUnsupported wraps encoders to replace source runes outside the
-// repertoire of the destination encoding with HTML escape sequences.
-//
-// This wrapper exists to comply to URL and HTML forms requiring a
-// non-terminating legacy encoder. The produced sequences may lead to data
-// loss as they are indistinguishable from legitimate input. To avoid this
-// issue, use UTF-8 encodings whenever possible.
-func HTMLEscapeUnsupported(e *Encoder) *Encoder {
-	return &Encoder{Transformer: &errorHandler{e, errorToHTML}}
-}
-
-// ReplaceUnsupported wraps encoders to replace source runes outside the
-// repertoire of the destination encoding with an encoding-specific
-// replacement.
-//
-// This wrapper is only provided for backwards compatibility and legacy
-// handling. Its use is strongly discouraged. Use UTF-8 whenever possible.
-func ReplaceUnsupported(e *Encoder) *Encoder {
-	return &Encoder{Transformer: &errorHandler{e, errorToReplacement}}
-}
-
 type errorHandler struct {
 	*Encoder
 	handler func(dst []byte, r rune, err repertoireError) (n int, ok bool)
@@ -267,26 +171,6 @@ func (h errorHandler) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int, er
 		}
 	}
 	return nDst, nSrc, err
-}
-
-func errorToHTML(dst []byte, r rune, err repertoireError) (n int, ok bool) {
-	buf := [8]byte{}
-	b := strconv.AppendUint(buf[:0], uint64(r), 10)
-	if n = len(b) + len("&#;"); n >= len(dst) {
-		return 0, false
-	}
-	dst[0] = '&'
-	dst[1] = '#'
-	dst[copy(dst[2:], b)+2] = ';'
-	return n, true
-}
-
-func errorToReplacement(dst []byte, r rune, err repertoireError) (n int, ok bool) {
-	if len(dst) == 0 {
-		return 0, false
-	}
-	dst[0] = err.Replacement()
-	return 1, true
 }
 
 // ErrInvalidUTF8 means that a transformer encountered invalid UTF-8.

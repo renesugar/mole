@@ -64,12 +64,6 @@ func (a *Application) SetInputCapture(capture func(event *tcell.EventKey) *tcell
 	return a
 }
 
-// GetInputCapture returns the function installed with SetInputCapture() or nil
-// if no such function has been installed.
-func (a *Application) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
-	return a.inputCapture
-}
-
 // Run starts the application and thus the event loop. This function returns
 // when Stop() was called.
 func (a *Application) Run() error {
@@ -275,41 +269,6 @@ func (a *Application) Draw() *Application {
 	return a
 }
 
-// SetBeforeDrawFunc installs a callback function which is invoked just before
-// the root primitive is drawn during screen updates. If the function returns
-// true, drawing will not continue, i.e. the root primitive will not be drawn
-// (and an after-draw-handler will not be called).
-//
-// Note that the screen is not cleared by the application. To clear the screen,
-// you may call screen.Clear().
-//
-// Provide nil to uninstall the callback function.
-func (a *Application) SetBeforeDrawFunc(handler func(screen tcell.Screen) bool) *Application {
-	a.beforeDraw = handler
-	return a
-}
-
-// GetBeforeDrawFunc returns the callback function installed with
-// SetBeforeDrawFunc() or nil if none has been installed.
-func (a *Application) GetBeforeDrawFunc() func(screen tcell.Screen) bool {
-	return a.beforeDraw
-}
-
-// SetAfterDrawFunc installs a callback function which is invoked after the root
-// primitive was drawn during screen updates.
-//
-// Provide nil to uninstall the callback function.
-func (a *Application) SetAfterDrawFunc(handler func(screen tcell.Screen)) *Application {
-	a.afterDraw = handler
-	return a
-}
-
-// GetAfterDrawFunc returns the callback function installed with
-// SetAfterDrawFunc() or nil if none has been installed.
-func (a *Application) GetAfterDrawFunc() func(screen tcell.Screen) {
-	return a.afterDraw
-}
-
 // SetRoot sets the root primitive for this application. If "fullscreen" is set
 // to true, the root primitive's position will be changed to fill the screen.
 //
@@ -328,16 +287,6 @@ func (a *Application) SetRoot(root Primitive, fullscreen bool) *Application {
 
 	a.SetFocus(root)
 
-	return a
-}
-
-// ResizeToFullScreen resizes the given primitive such that it fills the entire
-// screen.
-func (a *Application) ResizeToFullScreen(p Primitive) *Application {
-	a.RLock()
-	width, height := a.screen.Size()
-	a.RUnlock()
-	p.SetRect(0, 0, width, height)
 	return a
 }
 
@@ -364,12 +313,4 @@ func (a *Application) SetFocus(p Primitive) *Application {
 	}
 
 	return a
-}
-
-// GetFocus returns the primitive which has the current focus. If none has it,
-// nil is returned.
-func (a *Application) GetFocus() Primitive {
-	a.RLock()
-	defer a.RUnlock()
-	return a.focus
 }

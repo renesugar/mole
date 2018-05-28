@@ -21,53 +21,6 @@ import (
 	"golang.org/x/text/transform"
 )
 
-// NewSimulationScreen returns a SimulationScreen.  Note that
-// SimulationScreen is also a Screen.
-func NewSimulationScreen(charset string) SimulationScreen {
-	if charset == "" {
-		charset = "UTF-8"
-	}
-	s := &simscreen{charset: charset}
-	return s
-}
-
-// SimulationScreen represents a screen simulation.  This is intended to
-// be a superset of normal Screens, but also adds some important interfaces
-// for testing.
-type SimulationScreen interface {
-	// InjectKeyBytes injects a stream of bytes corresponding to
-	// the native encoding (see charset).  It turns true if the entire
-	// set of bytes were processed and delivered as KeyEvents, false
-	// if any bytes were not fully understood.  Any bytes that are not
-	// fully converted are discarded.
-	InjectKeyBytes(buf []byte) bool
-
-	// InjectKey injects a key event.  The rune is a UTF-8 rune, post
-	// any translation.
-	InjectKey(key Key, r rune, mod ModMask)
-
-	// InjectMouse injects a mouse event.
-	InjectMouse(x, y int, buttons ButtonMask, mod ModMask)
-
-	// SetSize resizes the underlying physical screen.  It also causes
-	// a resize event to be injected during the next Show() or Sync().
-	// A new physical contents array will be allocated (with data from
-	// the old copied), so any prior value obtained with GetContents
-	// won't be used anymore
-	SetSize(width, height int)
-
-	// GetContents returns screen contents as an array of
-	// cells, along with the physical width & height.   Note that the
-	// physical contents will be used until the next time SetSize()
-	// is called.
-	GetContents() (cells []SimCell, width int, height int)
-
-	// GetCursor returns the cursor details.
-	GetCursor() (x int, y int, visible bool)
-
-	Screen
-}
-
 // SimCell represents a simulated screen cell.  The purpose of this
 // is to track on screen content.
 type SimCell struct {
@@ -363,63 +316,6 @@ func (s *simscreen) PostEvent(ev Event) error {
 	}
 }
 
-func (s *simscreen) InjectMouse(x, y int, buttons ButtonMask, mod ModMask) {
-	ev := NewEventMouse(x, y, buttons, mod)
-	s.PostEvent(ev)
-}
-
-func (s *simscreen) InjectKey(key Key, r rune, mod ModMask) {
-	ev := NewEventKey(KeyRune, r, ModNone)
-	s.PostEvent(ev)
-}
-
-func (s *simscreen) InjectKeyBytes(b []byte) bool {
-	failed := false
-
-outer:
-	for len(b) > 0 {
-		if b[0] >= ' ' && b[0] <= 0x7F {
-			// printable ASCII easy to deal with -- no encodings
-			ev := NewEventKey(KeyRune, rune(b[0]), ModNone)
-			s.PostEvent(ev)
-			b = b[1:]
-			continue
-		}
-
-		if b[0] < 0x80 {
-			mod := ModNone
-			// No encodings start with low numbered values
-			if Key(b[0]) >= KeyCtrlA && Key(b[0]) <= KeyCtrlZ {
-				mod = ModCtrl
-			}
-			ev := NewEventKey(Key(b[0]), 0, mod)
-			s.PostEvent(ev)
-			continue
-		}
-
-		utfb := make([]byte, len(b)*4) // worst case
-		for l := 1; l < len(b); l++ {
-			s.decoder.Reset()
-			nout, nin, _ := s.decoder.Transform(utfb, b[:l], true)
-
-			if nout != 0 {
-				r, _ := utf8.DecodeRune(utfb[:nout])
-				if r != utf8.RuneError {
-					ev := NewEventKey(KeyRune, r, ModNone)
-					s.PostEvent(ev)
-				}
-				b = b[nin:]
-				continue outer
-			}
-		}
-		failed = true
-		b = b[1:]
-		continue
-	}
-
-	return !failed
-}
-
 func (s *simscreen) Sync() {
 	s.Lock()
 	s.clear = true
@@ -431,33 +327,6 @@ func (s *simscreen) Sync() {
 
 func (s *simscreen) CharacterSet() string {
 	return s.charset
-}
-
-func (s *simscreen) SetSize(w, h int) {
-	s.Lock()
-	newc := make([]SimCell, w*h)
-	for row := 0; row < h && row < s.physh; row++ {
-		for col := 0; col < w && col < s.physw; col++ {
-			newc[(row*w)+col] = s.front[(row*s.physw)+col]
-		}
-	}
-	s.physw = w
-	s.physh = h
-	s.Unlock()
-}
-
-func (s *simscreen) GetContents() ([]SimCell, int, int) {
-	s.Lock()
-	cells, w, h := s.front, s.physw, s.physh
-	s.Unlock()
-	return cells, w, h
-}
-
-func (s *simscreen) GetCursor() (int, int, bool) {
-	s.Lock()
-	x, y, vis := s.cursorx, s.cursory, s.cursorvis
-	s.Unlock()
-	return x, y, vis
 }
 
 func (s *simscreen) RegisterRuneFallback(r rune, subst string) {

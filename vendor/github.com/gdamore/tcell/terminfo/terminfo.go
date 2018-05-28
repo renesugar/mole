@@ -288,13 +288,6 @@ func (st stack) PushBool(i bool) stack {
 	return st.PushInt(0)
 }
 
-func nextch(s string, index int) (byte, int) {
-	if index < len(s) {
-		return s[index], index + 1
-	}
-	return 0, index
-}
-
 // static vars
 var svars [26]string
 
@@ -672,31 +665,6 @@ func (t *Terminfo) TPuts(w io.Writer, s string, baud int) {
 // row and column.  The origin 0, 0 is in the upper left corner of the screen.
 func (t *Terminfo) TGoto(col, row int) string {
 	return t.TParm(t.SetCursor, row, col)
-}
-
-// TColor returns a string corresponding to the given foreground and background
-// colors.  Either fg or bg can be set to -1 to elide.
-func (t *Terminfo) TColor(fi, bi int) string {
-	rv := ""
-	// As a special case, we map bright colors to lower versions if the
-	// color table only holds 8.  For the remaining 240 colors, the user
-	// is out of luck.  Someday we could create a mapping table, but its
-	// not worth it.
-	if t.Colors == 8 {
-		if fi > 7 && fi < 16 {
-			fi -= 8
-		}
-		if bi > 7 && bi < 16 {
-			bi -= 8
-		}
-	}
-	if t.Colors > fi && fi >= 0 {
-		rv += t.TParm(t.SetFg, fi)
-	}
-	if t.Colors > bi && bi >= 0 {
-		rv += t.TParm(t.SetBg, bi)
-	}
-	return rv
 }
 
 var (

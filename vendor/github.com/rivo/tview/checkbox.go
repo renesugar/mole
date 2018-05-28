@@ -44,27 +44,6 @@ type Checkbox struct {
 	finished func(tcell.Key)
 }
 
-// NewCheckbox returns a new input field.
-func NewCheckbox() *Checkbox {
-	return &Checkbox{
-		Box:                  NewBox(),
-		labelColor:           Styles.SecondaryTextColor,
-		fieldBackgroundColor: Styles.ContrastBackgroundColor,
-		fieldTextColor:       Styles.PrimaryTextColor,
-	}
-}
-
-// SetChecked sets the state of the checkbox.
-func (c *Checkbox) SetChecked(checked bool) *Checkbox {
-	c.checked = checked
-	return c
-}
-
-// IsChecked returns whether or not the box is checked.
-func (c *Checkbox) IsChecked() bool {
-	return c.checked
-}
-
 // SetLabel sets the text to be displayed before the input area.
 func (c *Checkbox) SetLabel(label string) *Checkbox {
 	c.label = label
@@ -76,28 +55,9 @@ func (c *Checkbox) GetLabel() string {
 	return c.label
 }
 
-// SetLabelWidth sets the screen width of the label. A value of 0 will cause the
-// primitive to use the width of the label string.
-func (c *Checkbox) SetLabelWidth(width int) *Checkbox {
-	c.labelWidth = width
-	return c
-}
-
 // SetLabelColor sets the color of the label.
 func (c *Checkbox) SetLabelColor(color tcell.Color) *Checkbox {
 	c.labelColor = color
-	return c
-}
-
-// SetFieldBackgroundColor sets the background color of the input area.
-func (c *Checkbox) SetFieldBackgroundColor(color tcell.Color) *Checkbox {
-	c.fieldBackgroundColor = color
-	return c
-}
-
-// SetFieldTextColor sets the text color of the input area.
-func (c *Checkbox) SetFieldTextColor(color tcell.Color) *Checkbox {
-	c.fieldTextColor = color
 	return c
 }
 

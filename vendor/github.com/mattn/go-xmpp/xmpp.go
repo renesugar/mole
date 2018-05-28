@@ -67,10 +67,6 @@ type Client struct {
 	p      *xml.Decoder
 }
 
-func (c *Client) JID() string {
-	return c.jid
-}
-
 func containsIgnoreCase(s, substr string) bool {
 	s, substr = strings.ToUpper(s), strings.ToUpper(substr)
 	return strings.Contains(s, substr)
@@ -252,19 +248,6 @@ func NewClient(host, user, passwd string, debug bool) (*Client, error) {
 		Host:     host,
 		User:     user,
 		Password: passwd,
-		Debug:    debug,
-		Session:  false,
-	}
-	return opts.NewClient()
-}
-
-// NewClientNoTLS creates a new client without TLS
-func NewClientNoTLS(host, user, passwd string, debug bool) (*Client, error) {
-	opts := Options{
-		Host:     host,
-		User:     user,
-		Password: passwd,
-		NoTLS:    true,
 		Debug:    debug,
 		Session:  false,
 	}
@@ -667,28 +650,6 @@ func (c *Client) Send(chat Chat) (n int, err error) {
 		xmlEscape(chat.Remote), xmlEscape(chat.Type), cnonce(), xmlEscape(chat.Text))
 }
 
-// SendOrg sends the original text without being wrapped in an XMPP message stanza.
-func (c *Client) SendOrg(org string) (n int, err error) {
-	return fmt.Fprint(c.conn, org)
-}
-
-func (c *Client) SendPresence(presence Presence) (n int, err error) {
-	return fmt.Fprintf(c.conn, "<presence from='%s' to='%s'/>", xmlEscape(presence.From), xmlEscape(presence.To))
-}
-
-// SendKeepAlive sends a "whitespace keepalive" as described in chapter 4.6.1 of RFC6120.
-func (c *Client) SendKeepAlive() (n int, err error) {
-	return fmt.Fprintf(c.conn, " ")
-}
-
-// SendHtml sends the message as HTML as defined by XEP-0071
-func (c *Client) SendHtml(chat Chat) (n int, err error) {
-	return fmt.Fprintf(c.conn, "<message to='%s' type='%s' xml:lang='en'>"+
-		"<body>%s</body>"+
-		"<html xmlns='http://jabber.org/protocol/xhtml-im'><body xmlns='http://www.w3.org/1999/xhtml'>%s</body></html></message>",
-		xmlEscape(chat.Remote), xmlEscape(chat.Type), xmlEscape(chat.Text), chat.Text)
-}
-
 // Roster asks for the chat roster.
 func (c *Client) Roster() error {
 	fmt.Fprintf(c.conn, "<iq from='%s' type='get' id='roster1'><query xmlns='jabber:iq:roster'/></iq>\n", xmlEscape(c.jid))
@@ -730,16 +691,9 @@ type saslMechanisms struct {
 	Mechanism []string `xml:"mechanism"`
 }
 
-type saslAuth struct {
-	XMLName   xml.Name `xml:"urn:ietf:params:xml:ns:xmpp-sasl auth"`
-	Mechanism string   `xml:",attr"`
-}
-
 type saslChallenge string
 
 type saslRspAuth string
-
-type saslResponse string
 
 type saslAbort struct {
 	XMLName xml.Name `xml:"urn:ietf:params:xml:ns:xmpp-sasl abort"`
@@ -818,11 +772,6 @@ func (e *XMLElement) String() string {
 
 type Delay struct {
 	Stamp string `xml:"stamp,attr"`
-}
-
-type clientText struct {
-	Lang string `xml:",attr"`
-	Body string `xml:"chardata"`
 }
 
 type clientPresence struct {

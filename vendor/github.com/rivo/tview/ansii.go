@@ -29,20 +29,6 @@ type ansii struct {
 	state int
 }
 
-// ANSIIWriter returns an io.Writer which translates any ANSII escape codes
-// written to it into tview color tags. Other escape codes don't have an effect
-// and are simply removed. The translated text is written to the provided
-// writer.
-func ANSIIWriter(writer io.Writer) io.Writer {
-	return &ansii{
-		Writer:          writer,
-		buffer:          new(bytes.Buffer),
-		csiParameter:    new(bytes.Buffer),
-		csiIntermediate: new(bytes.Buffer),
-		state:           ansiiText,
-	}
-}
-
 // Write parses the given text as a string of runes, translates ANSII escape
 // codes to color tags and writes them to the output writer.
 func (a *ansii) Write(text []byte) (int, error) {
@@ -225,13 +211,4 @@ func (a *ansii) Write(text []byte) (int, error) {
 		return int(n), err
 	}
 	return len(text), nil
-}
-
-// TranslateANSII replaces ANSII escape sequences found in the provided string
-// with tview's color tags and returns the resulting string.
-func TranslateANSII(text string) string {
-	var buffer bytes.Buffer
-	writer := ANSIIWriter(&buffer)
-	writer.Write([]byte(text))
-	return buffer.String()
 }

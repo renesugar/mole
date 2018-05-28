@@ -85,36 +85,6 @@ func (l *List) GetCurrentItem() int {
 	return l.currentItem
 }
 
-// SetMainTextColor sets the color of the items' main text.
-func (l *List) SetMainTextColor(color tcell.Color) *List {
-	l.mainTextColor = color
-	return l
-}
-
-// SetSecondaryTextColor sets the color of the items' secondary text.
-func (l *List) SetSecondaryTextColor(color tcell.Color) *List {
-	l.secondaryTextColor = color
-	return l
-}
-
-// SetShortcutColor sets the color of the items' shortcut.
-func (l *List) SetShortcutColor(color tcell.Color) *List {
-	l.shortcutColor = color
-	return l
-}
-
-// SetSelectedTextColor sets the text color of selected items.
-func (l *List) SetSelectedTextColor(color tcell.Color) *List {
-	l.selectedTextColor = color
-	return l
-}
-
-// SetSelectedBackgroundColor sets the background color of selected items.
-func (l *List) SetSelectedBackgroundColor(color tcell.Color) *List {
-	l.selectedBackgroundColor = color
-	return l
-}
-
 // ShowSecondaryText determines whether or not to show secondary item texts.
 func (l *List) ShowSecondaryText(show bool) *List {
 	l.showSecondaryText = show
@@ -170,26 +140,6 @@ func (l *List) AddItem(mainText, secondaryText string, shortcut rune, selected f
 		item := l.items[0]
 		l.changed(0, item.MainText, item.SecondaryText, item.Shortcut)
 	}
-	return l
-}
-
-// GetItemCount returns the number of items in the list.
-func (l *List) GetItemCount() int {
-	return len(l.items)
-}
-
-// GetItemText returns an item's texts (main and secondary). Panics if the index
-// is out of range.
-func (l *List) GetItemText(index int) (main, secondary string) {
-	return l.items[index].MainText, l.items[index].SecondaryText
-}
-
-// SetItemText sets an item's main and secondary text. Panics if the index is
-// out of range.
-func (l *List) SetItemText(index int, main, secondary string) *List {
-	item := l.items[index]
-	item.MainText = main
-	item.SecondaryText = secondary
 	return l
 }
 

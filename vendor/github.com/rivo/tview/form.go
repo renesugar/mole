@@ -100,57 +100,9 @@ func NewForm() *Form {
 	return f
 }
 
-// SetItemPadding sets the number of empty rows between form items for vertical
-// layouts and the number of empty cells between form items for horizontal
-// layouts.
-func (f *Form) SetItemPadding(padding int) *Form {
-	f.itemPadding = padding
-	return f
-}
-
-// SetHorizontal sets the direction the form elements are laid out. If set to
-// true, instead of positioning them from top to bottom (the default), they are
-// positioned from left to right, moving into the next row if there is not
-// enough space.
-func (f *Form) SetHorizontal(horizontal bool) *Form {
-	f.horizontal = horizontal
-	return f
-}
-
 // SetLabelColor sets the color of the labels.
 func (f *Form) SetLabelColor(color tcell.Color) *Form {
 	f.labelColor = color
-	return f
-}
-
-// SetFieldBackgroundColor sets the background color of the input areas.
-func (f *Form) SetFieldBackgroundColor(color tcell.Color) *Form {
-	f.fieldBackgroundColor = color
-	return f
-}
-
-// SetFieldTextColor sets the text color of the input areas.
-func (f *Form) SetFieldTextColor(color tcell.Color) *Form {
-	f.fieldTextColor = color
-	return f
-}
-
-// SetButtonsAlign sets how the buttons align horizontally, one of AlignLeft
-// (the default), AlignCenter, and AlignRight. This is only
-func (f *Form) SetButtonsAlign(align int) *Form {
-	f.buttonsAlign = align
-	return f
-}
-
-// SetButtonBackgroundColor sets the background color of the buttons.
-func (f *Form) SetButtonBackgroundColor(color tcell.Color) *Form {
-	f.buttonBackgroundColor = color
-	return f
-}
-
-// SetButtonTextColor sets the color of the button texts.
-func (f *Form) SetButtonTextColor(color tcell.Color) *Form {
-	f.buttonTextColor = color
 	return f
 }
 
@@ -188,29 +140,6 @@ func (f *Form) AddPasswordField(label, value string, fieldWidth int, mask rune, 
 	return f
 }
 
-// AddDropDown adds a drop-down element to the form. It has a label, options,
-// and an (optional) callback function which is invoked when an option was
-// selected. The initial option may be a negative value to indicate that no
-// option is currently selected.
-func (f *Form) AddDropDown(label string, options []string, initialOption int, selected func(option string, optionIndex int)) *Form {
-	f.items = append(f.items, NewDropDown().
-		SetLabel(label).
-		SetCurrentOption(initialOption).
-		SetOptions(options, selected))
-	return f
-}
-
-// AddCheckbox adds a checkbox to the form. It has a label, an initial state,
-// and an (optional) callback function which is invoked when the state of the
-// checkbox was changed by the user.
-func (f *Form) AddCheckbox(label string, checked bool, changed func(checked bool)) *Form {
-	f.items = append(f.items, NewCheckbox().
-		SetLabel(label).
-		SetChecked(checked).
-		SetChangedFunc(changed))
-	return f
-}
-
 // AddButton adds a new button to the form. The "selected" function is called
 // when the user selects this button. It may be nil.
 func (f *Form) AddButton(label string, selected func()) *Form {
@@ -226,47 +155,6 @@ func (f *Form) Clear(includeButtons bool) *Form {
 		f.buttons = nil
 	}
 	f.focusedElement = 0
-	return f
-}
-
-// AddFormItem adds a new item to the form. This can be used to add your own
-// objects to the form. Note, however, that the Form class will override some
-// of its attributes to make it work in the form context. Specifically, these
-// are:
-//
-//   - The label width
-//   - The label color
-//   - The background color
-//   - The field text color
-//   - The field background color
-func (f *Form) AddFormItem(item FormItem) *Form {
-	f.items = append(f.items, item)
-	return f
-}
-
-// GetFormItem returns the form element at the given position, starting with
-// index 0. Elements are referenced in the order they were added. Buttons are
-// not included.
-func (f *Form) GetFormItem(index int) FormItem {
-	return f.items[index]
-}
-
-// GetFormItemByLabel returns the first form element with the given label. If
-// no such element is found, nil is returned. Buttons are not searched and will
-// therefore not be returned.
-func (f *Form) GetFormItemByLabel(label string) FormItem {
-	for _, item := range f.items {
-		if item.GetLabel() == label {
-			return item
-		}
-	}
-	return nil
-}
-
-// SetCancelFunc sets a handler which is called when the user hits the Escape
-// key.
-func (f *Form) SetCancelFunc(callback func()) *Form {
-	f.cancel = callback
 	return f
 }
 

@@ -64,13 +64,6 @@ func (f *Flex) SetDirection(direction int) *Flex {
 	return f
 }
 
-// SetFullScreen sets the flag which, when true, causes the flex layout to use
-// the entire screen space instead of whatever size it is currently assigned to.
-func (f *Flex) SetFullScreen(fullScreen bool) *Flex {
-	f.fullScreen = fullScreen
-	return f
-}
-
 // AddItem adds a new item to the container. The "fixedSize" argument is a width
 // or height that may not be changed by the layout algorithm. A value of 0 means
 // that its size is flexible and may be changed. The "proportion" argument
@@ -87,17 +80,6 @@ func (f *Flex) SetFullScreen(fullScreen bool) *Flex {
 // space but nothing will be drawn.
 func (f *Flex) AddItem(item Primitive, fixedSize, proportion int, focus bool) *Flex {
 	f.items = append(f.items, flexItem{Item: item, FixedSize: fixedSize, Proportion: proportion, Focus: focus})
-	return f
-}
-
-// RemoveItem removes all items for the given primitive from the container,
-// keeping the order of the remaining items intact.
-func (f *Flex) RemoveItem(p Primitive) *Flex {
-	for index := len(f.items) - 1; index >= 0; index-- {
-		if f.items[index].Item == p {
-			f.items = append(f.items[:index], f.items[index+1:]...)
-		}
-	}
 	return f
 }
 

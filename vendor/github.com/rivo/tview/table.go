@@ -43,57 +43,9 @@ type TableCell struct {
 	x, y, width int
 }
 
-// NewTableCell returns a new table cell with sensible defaults. That is, left
-// aligned text with the primary text color (see Styles) and a transparent
-// background (using the background of the Table).
-func NewTableCell(text string) *TableCell {
-	return &TableCell{
-		Text:            text,
-		Align:           AlignLeft,
-		Color:           Styles.PrimaryTextColor,
-		BackgroundColor: tcell.ColorDefault,
-	}
-}
-
 // SetText sets the cell's text.
 func (c *TableCell) SetText(text string) *TableCell {
 	c.Text = text
-	return c
-}
-
-// SetAlign sets the cell's text alignment, one of AlignLeft, AlignCenter, or
-// AlignRight.
-func (c *TableCell) SetAlign(align int) *TableCell {
-	c.Align = align
-	return c
-}
-
-// SetMaxWidth sets maximum width of the cell in screen space. This is used to
-// give a column a maximum width. Any cell text whose screen width exceeds this
-// width is cut off. Set to 0 if there is no maximum width.
-func (c *TableCell) SetMaxWidth(maxWidth int) *TableCell {
-	c.MaxWidth = maxWidth
-	return c
-}
-
-// SetExpansion sets the value by which the column of this cell expands if the
-// available width for the table is more than the table width (prior to applying
-// this expansion value). This is a proportional value. The amount of unused
-// horizontal space is divided into widths to be added to each column. How much
-// extra width a column receives depends on the expansion value: A value of 0
-// (the default) will not cause the column to increase in width. Other values
-// are proportional, e.g. a value of 2 will cause a column to grow by twice
-// the amount of a column with a value of 1.
-//
-// Since this value affects an entire column, the maximum over all visible cells
-// in that column is used.
-//
-// This function panics if a negative value is provided.
-func (c *TableCell) SetExpansion(expansion int) *TableCell {
-	if expansion < 0 {
-		panic("Table cell expansion values may not be negative")
-	}
-	c.Expansion = expansion
 	return c
 }
 
@@ -108,40 +60,6 @@ func (c *TableCell) SetTextColor(color tcell.Color) *TableCell {
 func (c *TableCell) SetBackgroundColor(color tcell.Color) *TableCell {
 	c.BackgroundColor = color
 	return c
-}
-
-// SetAttributes sets the cell's text attributes. You can combine different
-// attributes using bitmask operations:
-//
-//   cell.SetAttributes(tcell.AttrUnderline | tcell.AttrBold)
-func (c *TableCell) SetAttributes(attr tcell.AttrMask) *TableCell {
-	c.Attributes = attr
-	return c
-}
-
-// SetStyle sets the cell's style (foreground color, background color, and
-// attributes) all at once.
-func (c *TableCell) SetStyle(style tcell.Style) *TableCell {
-	c.Color, c.BackgroundColor, c.Attributes = style.Decompose()
-	return c
-}
-
-// SetSelectable sets whether or not this cell can be selected by the user.
-func (c *TableCell) SetSelectable(selectable bool) *TableCell {
-	c.NotSelectable = !selectable
-	return c
-}
-
-// GetLastPosition returns the position of the table cell the last time it was
-// drawn on screen. If the cell is not on screen, the return values are
-// undefined.
-//
-// Because the Table class will attempt to keep selected cells on screen, this
-// function is most useful in response to a "selected" event (see
-// SetSelectedFunc()) or a "selectionChanged" event (see
-// SetSelectionChangedFunc()).
-func (c *TableCell) GetLastPosition() (x, y, width int) {
-	return c.x, c.y, c.width
 }
 
 // Table visualizes two-dimensional data consisting of rows and columns. Each
@@ -246,16 +164,6 @@ type Table struct {
 	done func(key tcell.Key)
 }
 
-// NewTable returns a new table.
-func NewTable() *Table {
-	return &Table{
-		Box:          NewBox(),
-		bordersColor: Styles.GraphicsColor,
-		separator:    ' ',
-		lastColumn:   -1,
-	}
-}
-
 // Clear removes all table data.
 func (t *Table) Clear() *Table {
 	t.cells = nil
@@ -270,81 +178,6 @@ func (t *Table) SetBorders(show bool) *Table {
 	return t
 }
 
-// SetBordersColor sets the color of the cell borders.
-func (t *Table) SetBordersColor(color tcell.Color) *Table {
-	t.bordersColor = color
-	return t
-}
-
-// SetSeparator sets the character used to fill the space between two
-// neighboring cells. This is a space character ' ' per default but you may
-// want to set it to GraphicsVertBar (or any other rune) if the column
-// separation should be more visible. If cell borders are activated, this is
-// ignored.
-//
-// Separators have the same color as borders.
-func (t *Table) SetSeparator(separator rune) *Table {
-	t.separator = separator
-	return t
-}
-
-// SetFixed sets the number of fixed rows and columns which are always visible
-// even when the rest of the cells are scrolled out of view. Rows are always the
-// top-most ones. Columns are always the left-most ones.
-func (t *Table) SetFixed(rows, columns int) *Table {
-	t.fixedRows, t.fixedColumns = rows, columns
-	return t
-}
-
-// SetSelectable sets the flags which determine what can be selected in a table.
-// There are three selection modi:
-//
-//   - rows = false, columns = false: Nothing can be selected.
-//   - rows = true, columns = false: Rows can be selected.
-//   - rows = false, columns = true: Columns can be selected.
-//   - rows = true, columns = true: Individual cells can be selected.
-func (t *Table) SetSelectable(rows, columns bool) *Table {
-	t.rowsSelectable, t.columnsSelectable = rows, columns
-	return t
-}
-
-// GetSelectable returns what can be selected in a table. Refer to
-// SetSelectable() for details.
-func (t *Table) GetSelectable() (rows, columns bool) {
-	return t.rowsSelectable, t.columnsSelectable
-}
-
-// GetSelection returns the position of the current selection.
-// If entire rows are selected, the column index is undefined.
-// Likewise for entire columns.
-func (t *Table) GetSelection() (row, column int) {
-	return t.selectedRow, t.selectedColumn
-}
-
-// Select sets the selected cell. Depending on the selection settings
-// specified via SetSelectable(), this may be an entire row or column, or even
-// ignored completely.
-func (t *Table) Select(row, column int) *Table {
-	t.selectedRow, t.selectedColumn = row, column
-	return t
-}
-
-// SetOffset sets how many rows and columns should be skipped when drawing the
-// table. This is useful for large tables that do not fit on the screen.
-// Navigating a selection can change these values.
-//
-// Fixed rows and columns are never skipped.
-func (t *Table) SetOffset(row, column int) *Table {
-	t.rowOffset, t.columnOffset = row, column
-	return t
-}
-
-// GetOffset returns the current row and column offset. This indicates how many
-// rows and columns the table is scrolled down and to the right.
-func (t *Table) GetOffset() (row, column int) {
-	return t.rowOffset, t.columnOffset
-}
-
 // SetSelectedFunc sets a handler which is called whenever the user presses the
 // Enter key on a selected cell/row/column. The handler receives the position of
 // the selection and its cell contents. If entire rows are selected, the column
@@ -354,98 +187,12 @@ func (t *Table) SetSelectedFunc(handler func(row, column int)) *Table {
 	return t
 }
 
-// SetSelectionChangedFunc sets a handler which is called whenever the user
-// navigates to a new selection. The handler receives the position of the new
-// selection. If entire rows are selected, the column index is undefined.
-// Likewise for entire columns.
-func (t *Table) SetSelectionChangedFunc(handler func(row, column int)) *Table {
-	t.selectionChanged = handler
-	return t
-}
-
 // SetDoneFunc sets a handler which is called whenever the user presses the
 // Escape, Tab, or Backtab key. If nothing is selected, it is also called when
 // user presses the Enter key (because pressing Enter on a selection triggers
 // the "selected" handler set via SetSelectedFunc()).
 func (t *Table) SetDoneFunc(handler func(key tcell.Key)) *Table {
 	t.done = handler
-	return t
-}
-
-// SetCell sets the content of a cell the specified position. It is ok to
-// directly instantiate a TableCell object. If the cell has contain, at least
-// the Text and Color fields should be set.
-//
-// Note that setting cells in previously unknown rows and columns will
-// automatically extend the internal table representation, e.g. starting with
-// a row of 100,000 will immediately create 100,000 empty rows.
-//
-// To avoid unnecessary garbage collection, fill columns from left to right.
-func (t *Table) SetCell(row, column int, cell *TableCell) *Table {
-	if row >= len(t.cells) {
-		t.cells = append(t.cells, make([][]*TableCell, row-len(t.cells)+1)...)
-	}
-	rowLen := len(t.cells[row])
-	if column >= rowLen {
-		t.cells[row] = append(t.cells[row], make([]*TableCell, column-rowLen+1)...)
-		for c := rowLen; c < column; c++ {
-			t.cells[row][c] = &TableCell{}
-		}
-	}
-	t.cells[row][column] = cell
-	if column > t.lastColumn {
-		t.lastColumn = column
-	}
-	return t
-}
-
-// SetCellSimple calls SetCell() with the given text, left-aligned, in white.
-func (t *Table) SetCellSimple(row, column int, text string) *Table {
-	t.SetCell(row, column, NewTableCell(text))
-	return t
-}
-
-// GetCell returns the contents of the cell at the specified position. A valid
-// TableCell object is always returns but it will be uninitialized if the cell
-// was not previously set.
-func (t *Table) GetCell(row, column int) *TableCell {
-	if row >= len(t.cells) || column >= len(t.cells[row]) {
-		return &TableCell{}
-	}
-	return t.cells[row][column]
-}
-
-// GetRowCount returns the number of rows in the table.
-func (t *Table) GetRowCount() int {
-	return len(t.cells)
-}
-
-// GetColumnCount returns the (maximum) number of columns in the table.
-func (t *Table) GetColumnCount() int {
-	if len(t.cells) == 0 {
-		return 0
-	}
-	return t.lastColumn + 1
-}
-
-// ScrollToBeginning scrolls the table to the beginning to that the top left
-// corner of the table is shown. Note that this position may be corrected if
-// there is a selection.
-func (t *Table) ScrollToBeginning() *Table {
-	t.trackEnd = false
-	t.columnOffset = 0
-	t.rowOffset = 0
-	return t
-}
-
-// ScrollToEnd scrolls the table to the beginning to that the bottom left corner
-// of the table is shown. Adding more rows to the table will cause it to
-// automatically scroll with the new data. Note that this position may be
-// corrected if there is a selection.
-func (t *Table) ScrollToEnd() *Table {
-	t.trackEnd = true
-	t.columnOffset = 0
-	t.rowOffset = len(t.cells)
 	return t
 }
 

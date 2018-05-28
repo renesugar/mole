@@ -105,40 +105,9 @@ func (i *InputField) GetLabel() string {
 	return i.label
 }
 
-// SetLabelWidth sets the screen width of the label. A value of 0 will cause the
-// primitive to use the width of the label string.
-func (i *InputField) SetLabelWidth(width int) *InputField {
-	i.labelWidth = width
-	return i
-}
-
-// SetPlaceholder sets the text to be displayed when the input text is empty.
-func (i *InputField) SetPlaceholder(text string) *InputField {
-	i.placeholder = text
-	return i
-}
-
 // SetLabelColor sets the color of the label.
 func (i *InputField) SetLabelColor(color tcell.Color) *InputField {
 	i.labelColor = color
-	return i
-}
-
-// SetFieldBackgroundColor sets the background color of the input area.
-func (i *InputField) SetFieldBackgroundColor(color tcell.Color) *InputField {
-	i.fieldBackgroundColor = color
-	return i
-}
-
-// SetFieldTextColor sets the text color of the input area.
-func (i *InputField) SetFieldTextColor(color tcell.Color) *InputField {
-	i.fieldTextColor = color
-	return i
-}
-
-// SetPlaceholderTextColor sets the text color of placeholder text.
-func (i *InputField) SetPlaceholderTextColor(color tcell.Color) *InputField {
-	i.placeholderTextColor = color
 	return i
 }
 

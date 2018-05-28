@@ -35,19 +35,3 @@ type EventTime struct {
 func (e *EventTime) When() time.Time {
 	return e.when
 }
-
-// SetEventTime sets the time of occurrence for the event.
-func (e *EventTime) SetEventTime(t time.Time) {
-	e.when = t
-}
-
-// SetEventNow sets the time of occurrence for the event to the current time.
-func (e *EventTime) SetEventNow() {
-	e.SetEventTime(time.Now())
-}
-
-// EventHandler is anything that handles events.  If the handler has
-// consumed the event, it should return true.  False otherwise.
-type EventHandler interface {
-	HandleEvent(Event) bool
-}
